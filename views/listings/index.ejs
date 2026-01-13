@@ -4,44 +4,27 @@
      <!-- <form method="GET" action="/listings/new">
         <button>Create new Listing</button>
     </form>  -->
-
-<% for(let listing of allListings) { %>
-<div class="card" style="width: 18rem;">
-    <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image">
-    <div class="card-body">
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-    </div>
-</div>
-<% } %>
-
-
-<ul>  
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1">
     <% for(let listing of allListings) { %>
-            <li><a href="/listings/<%= listing._id%>"> <%= listing.title %> </a></li>
-    <% } %>
-</ul>
-
-<!-- <% layout("/layouts/boilerplate") %>
-
-<h3 class="mb-4">All Listings</h3>
-
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  <% for (let listing of allListings) { %>
-    <div class="col">
-      <div class="card h-100">
-        <img 
-          src="<%= listing.image.url %>" 
-          class="card-img-top"
-          alt="listing image"
-          style="height: 200px; object-fit: cover;"
-        >
-        <div class="card-body">
-          <h5 class="card-title"><%= listing.title %></h5>
-          <p class="card-text"><%= listing.description %></p>
+    <a href="/listings/<%= listing._id %>" class="listing-link">
+       <div class="card col">
+         <img src="<%= listing.image.url %>" 
+           class="card-img-top" 
+           alt="listing_image" 
+           style="height: 20rem"
+         />
+         <div class="card-img-overlay"></div>
+         <div class="card-body">
+         <p class="card-text">
+            <b><%= listing.title %></b> <br />
+            &#8377; <%= listing.price.toLocaleString("en-IN") %> /night
+         </p>
+         </div>
         </div>
-      </div>
-    </div>
-  <% } %>
-</div> -->
+    </a>
+<% } %>
+</div>
+
+
 
 
