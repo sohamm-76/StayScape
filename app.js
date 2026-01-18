@@ -8,6 +8,7 @@ const ejsMate = require("ejs-mate");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/stayscape";
 
+// -------------------- DB CONNECTION --------------------
 main()
   .then(() => {
     console.log("connected to DB");
@@ -16,83 +17,81 @@ main()
     console.log(err);
   });
 
-async function main(){
+async function main() {
   await mongoose.connect(MONGO_URL);
 }
 
+// -------------------- APP CONFIG --------------------
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.engine("ejs", ejsMate);
+
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "public")));
+
+// -------------------- ROOT --------------------
 app.get("/", (req, res) => {
-  res.send("Hi, i am root!");
+  res.send("Hi, I am root!");
 });
 
-app.set("view engine","ejs");
-app.set("views", path.join(__dirname, "views"));
-app.use(express.urlencoded({extended: true}));
-app.use(methodOverride("_method"));
-app.engine('ejs', ejsMate);
-app.use(express.static(path.join(__dirname,"/public")));
+// ======================================================
+// ===================== LISTING ROUTES =================
+// ======================================================
 
-//Index Route
+// INDEX ROUTE
 app.get("/listings", async (req, res) => {
   const allListings = await Listing.find({});
   res.render("listings/index.ejs", { allListings });
 });
 
-//New Route
+// NEW ROUTE (FORM)
 app.get("/listings/new", (req, res) => {
   res.render("listings/new.ejs");
 });
 
-//Show Route
-app.get("/listings/:id", async (req, res) => {
-  let {id} = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/show.ejs", {listing});
-});
-
-//Create Route
+// CREATE ROUTE
 app.post("/listings", async (req, res) => {
+  if (!req.body.listing.image.url) {
+    delete req.body.listing.image.url;
+  }
+
   const newListing = new Listing(req.body.listing);
   await newListing.save();
   res.redirect("/listings");
 });
 
-//Edit Route
+// EDIT ROUTE (FORM)  ✅ MUST BE BEFORE SHOW
 app.get("/listings/:id/edit", async (req, res) => {
-  let {id} = req.params;
+  const { id } = req.params;
   const listing = await Listing.findById(id);
-  res.render("listings/edit.ejs",{ listing });
+  res.render("listings/edit.ejs", { listing });
 });
 
-//Update Route
+// UPDATE ROUTE
 app.put("/listings/:id", async (req, res) => {
-  let {id} = req.params;
-  await Listing.findByIdAndUpdate(id, {...req.body.listing});
-  res.redirect(`/listings/${id}`);
+  if (!req.body.listing.image.url) {
+    delete req.body.listing.image.url;
+  }
+
+  await Listing.findByIdAndUpdate(req.params.id, req.body.listing);
+  res.redirect(`/listings/${req.params.id}`);
 });
 
-//Delete Route
+// SHOW ROUTE  ❗ ALWAYS LAST
+app.get("/listings/:id", async (req, res) => {
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+  res.render("listings/show.ejs", { listing });
+});
+
+// DELETE ROUTE
 app.delete("/listings/:id", async (req, res) => {
-  let {id} = req.params;
-  let deletedListing = await Listing.findByIdAndDelete(id);
-  console.log(deletedListing);
+  await Listing.findByIdAndDelete(req.params.id);
   res.redirect("/listings");
 });
 
-
-// app.get("/testListing", async (req, res) => {
-//     let sampleListing = new Listing({
-//       title: "My New Villa",
-//       description: "By The Beach",
-//       price: 1200,
-//       location: "Calangute, Goa",
-//       country: "India",
-//     });
-
-//     await sampleListing.save();
-//     console.log("sample was saved");
-//     res.send("successful testing");
-// });
-
-app.listen(8080, () =>{
-    console.log("server is listening to port 8080");
+// -------------------- SERVER --------------------
+app.listen(8080, () => {
+  console.log("server is listening on port 8080");
 });
