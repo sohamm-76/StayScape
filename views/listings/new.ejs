@@ -2,7 +2,7 @@
 <div class="row mt-3">
     <div class="col-8 offset-2">
     <h3>Create a New Listing</h3>
-    <form method="POST" action="/listings">
+    <form method="POST" action="/listings" novalidate class="needs-validation">
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input 
@@ -10,7 +10,9 @@
               placeholder="Add a catchy title" 
               type="text" 
               class="form-control"
+              required 
             />
+            <div class="valid-feedback">Title looks good!</div>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
@@ -18,7 +20,9 @@
              name="listing[description]" 
              placeholder=""
              class="form-control"
+             required
             ></textarea>
+            <div class="invalid-feedback">Please enter a short description</div>
         </div>
         
         <div class="mb-3">
@@ -36,9 +40,11 @@
               <input 
                 name="listing[price]" 
                 placeholder="1200" 
-                type="number" required
+                
                 class="form-control"
+                required
               />
+              <div class="invalid-feedback">Please enter a valid price</div>
             </div>
 
             <div class="mb-3 col-md-8">
@@ -48,7 +54,9 @@
                 placeholder="India" 
                 type="text"
                 class="form-control"
+                required
                />
+               <div class="invalid-feedback">Country name should be valid</div>
             </div> 
         </div>
 
@@ -60,7 +68,10 @@
              name="listing[location]" 
              placeholder="Jaipur,Rajasthan" 
              type="text"
-             class="form-control">
+             class="form-control"
+             required
+            />
+            <div class="invalid-feedback">Location should be valid</div>
         </div>
         <br />
         <button class="btn btn-dark add-btn">Add</button>
